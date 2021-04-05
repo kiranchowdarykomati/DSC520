@@ -16,4 +16,4 @@ options(digits=2)
 stat.desc(ACS$HSDegree, basic = FALSE, norm = TRUE)
 #3.2.2.5
 ggplot(ACS,aes(HSDegree)) + geom_density()
-qqnorm(ACS$HSDegree, main = "Normal Q-Q Plot for High School Degree.") 
+qqnorm(ACS$HSDegree, main = "Normal Q-Q Plot for High School Degree") 
