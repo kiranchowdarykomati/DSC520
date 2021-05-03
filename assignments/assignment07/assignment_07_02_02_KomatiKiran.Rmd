@@ -36,7 +36,7 @@ cov(studentsurvey_df$TimeReading,studentsurvey_df$TimeTV)
 ```
 ## iii.Choose the type of correlation test to perform, explain why you chose this test, and make a prediction if the test yields a positive or negative correlation?
 
-I will choose pearson correlation test as both the variables have interval data. The test will yield negative correlation as the covariance has already yielded a negative relation between these two variables. Correlation is nothing but the scaled form of covariance.
+I will choose pearson correlation test as both the variables have interval data.But I'm not really sure why we should not use Kendall's Tau as the data set provided is small and there are few tied ranks as well as we order the variables TimeReading and TimeTv.. The test will yield negative correlation as the covariance has already yielded a negative relation between these two variables. Correlation is nothing but the scaled form of covariance.
 
 ## iv.Perform a correlation analysis of:
 ### 1.All variables
