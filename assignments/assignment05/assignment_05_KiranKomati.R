@@ -23,10 +23,10 @@ HDF <- read_excel('data/week-6-housing.xlsx')
 head(HDF)
 
 HDF %>% 
-    filter('Sale Price' > 500000) 
+    filter(`Sale Price` > 500000) 
 
 HDF %>% 
-    select('Sale Date',starts_with("year"))
+    select(`Sale Date`,starts_with("year"))
 
 HDF %>% 
     arrange(desc(year_built))
@@ -37,6 +37,8 @@ HDF %>%
         n=n(),
         Avg_SqFt=mean(square_feet_total_living,na.rm = TRUE)
     )
+
+
 
 HDF2 <- HDF %>% 
     mutate(price_per_sqft= `Sale Price` / sq_ft_lot) %>% 
@@ -49,10 +51,10 @@ discard(HDF$`Sale Price`,~ .x<1000000)
 
 
 houses_gt_500k <- HDF %>% 
-    filter('Sale Price' > 500000) 
+    filter(`Sale Price` > 500000) 
 
 houses_gt_300k <- HDF %>% 
-    filter('Sale Price' > 300000)
+    filter(`Sale Price` > 300000)
 
 #1.c
 houses_all <- rbind(houses_gt_500k,houses_gt_300k)

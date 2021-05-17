@@ -1,0 +1,175 @@
+---
+title: "ASSIGNMENT 8.2.3.b"
+author: "Kiran Komati"
+date: '2021-05-13'
+output:
+  pdf_document: default
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_knit$set(root.dir = 'C:/Users/kiran/dsc520')
+```
+
+# Load the necessary libraries and load the housing data
+
+```{r echo=TRUE}
+library("tidyverse")
+library("readxl")
+library(dplyr)
+HDF <- read_excel('data/week-6-housing.xlsx')
+```
+## Complete the following:
+
+# Explain any transformations or modifications you made to the dataset
+
+```{r echo=TRUE}
+HDF = rename(HDF,sale_price = `Sale Price`, sale_date=`Sale Date`)
+HDFSS <- separate(HDF, sale_date, c("sale_year", "sale_month", "sale_day"), sep = "-") %>%
+    dplyr::select(sale_price,sq_ft_lot,square_feet_total_living,bedrooms,bath_full_count,year_built,building_grade,sale_year)
+HDFSS$sale_year <- as.numeric(as.character(HDFSS$sale_year))
+```
+
+1. Renamed `Sale Price` to sale_price and `Sale Date` to sale_date.
+2. Extracted "sale_year", "sale_month", "sale_day" from the field "sale_date".
+3. Converted "sale_year" to numeric.
+4. Created a subset with sale_price,sq_ft_lot,square_feet_total_living,bedrooms,bath_full_count,year_built,building_grade fields in it.
+
+
+# Create two variables; one that will contain the variables Sale Price and Square Foot of Lot (same variables used from previous assignment on simple regression) and one that will contain Sale Price and several additional predictors of your choice. Explain the basis for your additional predictor selections.
+
+
+```{r echo=TRUE}
+HDF_lm <-  lm(sale_price ~ sq_ft_lot,data = HDF)
+HDFSS_lm <-  lm(sale_price ~ sq_ft_lot + square_feet_total_living + +building_grade  + bath_full_count + year_built + bedrooms, data=HDF)
+```
+
+Used correlation to identify the variables that are related to the sale price and picked those that have relatively strong correlation.
+
+# Execute a summary() function on two variables defined in the previous step to compare the model results. What are the R2 and Adjusted R2 statistics? Explain what these results tell you about the overall model. Did the inclusion of the additional predictors help explain any large variations found in Sale Price?
+
+```{r echo=TRUE}
+summary(HDF_lm)
+summary(HDFSS_lm)
+```
+R2 and adjusted R2 increased after adding the new predictors to the linear model which means the multiple linear regression with the 
+selected variables did a relatively good job in predicting prices and accounts for nearly 22% of the values.
+
+# Considering the parameters of the multiple regression model you have created. What are the standardized betas for each parameter and what do the values indicate?
+```{r echo=TRUE}
+library('QuantPsyc')
+lm.beta(HDFSS_lm)
+```
+
+These estimates tell us the number of standard deviations by which the outcome will change as a result of one standard deviation change in the predictor.
+
+# Calculate the confidence intervals for the parameters in your model and explain what the results indicate.
+```{r echo=TRUE}
+confint(HDFSS_lm)
+```
+This confidence interval tells us that the predictors (sq ft living total,bath_full_count) have very tight confidence intervals, indicating that the estimates for the current model are likely to be representative of the true population values. The interval for sq_ft_lot,building_grade,bath_full_count,year_built is wider (but still does not cross zero), indicating that the parameter for this variable is less representative, but nevertheless significant.For predictor "bedrooms" the value crossed zero indicating that in some samples the predictor has a negative relationship to the outcome whereas in others it has a positive relationship.
+
+# Assess the improvement of the new model compared to your original model (simple regression model) by testing whether this change is significant by performing an analysis of variance.
+
+```{r echo=TRUE}
+anova(HDF_lm,HDFSS_lm)
+```
+
+The value of F is 693.34,  we can say that multiple regression significantly improved the fit of the model to the data compared to simple regression, F(5, 12858) = 693.34, p < .001.
+
+# Perform casewise diagnostics to identify outliers and/or influential cases, storing each function's output in a dataframe assigned to a unique variable name.
+
+```{r echo=TRUE}
+HDFSS$standardized.residuals<- rstandard(HDFSS_lm)
+HDFSS$studentized.residuals<-rstudent(HDFSS_lm)
+HDFSS$cooks.distance<-cooks.distance(HDFSS_lm)
+HDFSS$dfbeta<-dfbeta(HDFSS_lm)
+HDFSS$dffit<-dffits(HDFSS_lm)
+HDFSS$leverage<-hatvalues(HDFSS_lm)
+HDFSS$covariance.ratios<-covratio(HDFSS_lm)
+```
+
+# Calculate the standardized residuals using the appropriate command, specifying those that are +-2, storing the results of large residuals in a variable you create.
+
+```{r echo=TRUE}
+HDFSS$large.residuals <- HDFSS$standardized.residuals > 2 | HDFSS$standardized.residuals < -2
+```
+
+# Use the appropriate function to show the sum of large residuals.
+```{r echo=TRUE}
+sum(HDFSS$large.residuals) 
+```
+
+# Which specific variables have large residuals (only cases that evaluate as TRUE)?
+```{r echo=TRUE}
+ HDFSS[HDFSS$large.residuals,c("sale_price","sq_ft_lot","square_feet_total_living","bedrooms","bath_full_count","year_built","building_grade","standardized.residuals")]
+```
+
+# Investigate further by calculating the leverage, cooks distance, and covariance rations. Comment on all cases that are problematics.
+```{r echo=TRUE}
+HDFSS[HDFSS$large.residuals , c("cooks.distance", "leverage", "covariance.ratios")]
+```
+
+```{r echo=TRUE}
+HDFSS %>% 
+    filter(cooks.distance >1) 
+```
+
+None of them has a Cook’s distance greater than 1. Values greater than 1 can be considered as a concern.
+
+```{r echo=TRUE}
+k <- ncol(HDF)
+n <- nrow(HDF)
+avg <- (k+1)/n
+
+HDFSS %>% 
+    filter(leverage >3*avg) 
+```
+Around 41 cases where leverage greater than three times average which can unduly influence the model.
+
+```{r echo=TRUE}
+CVR_Upperlimit<-1+(3*(k+1)/n)
+CVR_Lowerlimit<-1-(3*(k+1)/n)
+
+HDFSS %>% 
+    filter(covariance.ratios> CVR_Upperlimit | covariance.ratios< CVR_Lowerlimit) %>%
+    dplyr::select(covariance.ratios,cooks.distance)
+```
+
+Covariance ratio. There are 212 records where the covariance ratio is not with in the boundaries. But none of them are way beyond the limits
+which means that there are no significant cases that influence the model.
+
+
+# Perform the necessary calculations to assess the assumption of independence and state if the condition is met or not.
+```{r echo=TRUE}
+library('car')
+durbinWatsonTest(HDFSS_lm)
+```
+
+Here the value is 0.541 which is less than 1 and it means that the assumption of independence is not met.
+
+# Perform the necessary calculations to assess the assumption of no multicollinearity and state if the condition is met or not.
+
+```{r echo=TRUE}
+vif(HDFSS_lm)
+1/vif(HDFSS_lm)
+mean(vif(HDFSS_lm))
+```
+
+All the VIF values are well below 10 and the tolerance statistics are well above 0.2 , the mean VIF is 1.953. we can safely conclude that 
+there is no collinearity within our data.
+
+# Visually check the assumptions related to the residuals using the plot() and hist() functions. Summarize what each graph is informing you of and if any anomalies are present.
+
+```{r echo=TRUE}
+library(ggplot2)
+plot(HDFSS_lm)
+hist(HDFSS$studentized.residuals)
+```
+The plot function shows that values are evenly distributed around zero which indicates that the assumptions of linearity, randomness and homoscedasticity have been met. The second graph is skewed which shows that there's deviation from normality. Histogram shows that the distribution is not normal and that is is right skewed(assymetrical).
+
+
+# Overall, is this regression model unbiased? If an unbiased regression model, what does this tell us about the sample vs. the entire population model?
+
+For a model to be unbiased, there are several assumptions that must be true. For our model, assumption of independence is not met
+and  errors are not normally distributed. If a model is unbiased, it means that on an average the regression model from sample is same as the population model.
