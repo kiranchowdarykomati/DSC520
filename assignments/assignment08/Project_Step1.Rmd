@@ -42,5 +42,22 @@ The data is from https://www.kaggle.com/nehalbirla/vehicle-dataset-from-cardekho
 5. rmarkdown
 6. tinytex
 7. QuantPsyc
+8. knitcitations
 
 # Plots and Table Needed
+
+1. Histogram to check if the data is normally distributed.
+2. Scatterplots
+3. tables such as summary tables, correlation tables, covariance tables.
+4. Confidence intervals
+5. anova and Durbin Watson tests
+
+# Questions for future steps
+1. Are there any cleaning required for the data.
+2. Thorough Analysis for the missing data.
+3. If any missing data is found, how are we planning to handle it.
+4. Does the data set have any categorical data , if yes how are we planning to handle it.
+5. Which method best helps us in predicting the prices.
+6. What functions can be used to identify the relationship between the variables.
+
+
