@@ -42,3 +42,5 @@ The data is from https://www.kaggle.com/nehalbirla/vehicle-dataset-from-cardekho
 5. rmarkdown
 6. tinytex
 7. QuantPsyc
+
+# Plots and Table Needed
