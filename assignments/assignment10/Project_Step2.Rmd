@@ -114,6 +114,8 @@ I'm planning to use linear regression method to predict the prices. I will use s
 
 # Questions for future steps
 1. How to identify the covariance, correlation.
-2. 
-5. Which method best helps us in predicting the prices.
-6. What functions can be used to identify the relationship between the variables.
+2. Which method best helps us in predicting the prices.
+3. What variables to start the linear model with.
+4. Can we use multiple regression?
+5. If yes, what variables needs to be used for multiple regression.
+6. How to compare the models against each other.
