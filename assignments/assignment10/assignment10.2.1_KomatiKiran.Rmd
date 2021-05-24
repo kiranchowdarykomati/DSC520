@@ -1,0 +1,40 @@
+---
+title: "ASSIGNMENT 10.2.1"
+author: "Kiran Komati"
+date: '2021-05-22'
+output:
+    pdf_document: default
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_knit$set(root.dir = 'C:/Users/kiran/dsc520')
+```
+
+# Load the necessary libraries and load the Thoraric Surgery Data
+
+```{r echo=TRUE}
+library('foreign')
+ThS<-read.arff('data/ThoraricSurgery.arff')
+```
+# i) Fit a binary logistic regression model to the data set that predicts whether or not the patient survived for one year (the Risk1Y variable) after the surgery. Use the glm() function to perform the logistic regression. See Generalized Linear Models for an example. Include a summary using the summary() function in your results.
+
+
+```{r echo=TRUE}
+Ths_glm <- glm(formula = Risk1Yr ~ DGN + PRE14, family = binomial(), data = ThS)
+summary(Ths_glm)
+```
+
+# ii) According to the summary, which variables had the greatest effect on the survival rate?
+
+Residual Deviance shows that using variables DGN,PRE14 improved the ovreall model than when only the other variables are used.
+
+# iii) To compute the accuracy of your model, use the dataset to predict the outcome variable. The percent of correct predictions is the accuracy of your model. What is the accuracy of your model?
+
+```{r echo=TRUE}
+ThS$predicted.probabilities<-fitted(Ths_glm)
+res <- predict(Ths_glm,type="response")
+confMatrix <- table(Actual_Value=ThS$Risk1Yr,Predicted_Value=res>0.5)
+confMatrix
+(confMatrix[[1,1]] + confMatrix[[2,2]])/sum(confMatrix)
+```

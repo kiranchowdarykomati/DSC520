@@ -8,7 +8,6 @@ setwd("C:/Users/kiran/dsc520")
 ## Load the `data/r4ds/heights.csv` to
 heights_df <- read.csv("data/r4ds/heights.csv")
 
-head(heights_df)
 
 ## Load the ggplot2 library
 library(ggplot2)
@@ -27,6 +26,7 @@ ggplot(data = heights_df, aes(y = earn, x = age)) +
   geom_point(color='blue') +
   geom_line(color='red',data = age_predict_df, aes(y=earn, x=age))
 
+
 mean_earn <- mean(heights_df$earn)
 ## Corrected Sum of Squares Total
 sst <- sum((mean_earn - heights_df$earn)^2)
@@ -40,7 +40,7 @@ sse <- sum(residuals^2)
 r_squared <- ssm/sst
 
 ## Number of observations
-n <- 100
+n <- nrow(heights_df)
 ## Number of regression parameters
 p <- 2
 ## Corrected Degrees of Freedom for Model (p-1)
